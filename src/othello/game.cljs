@@ -36,7 +36,7 @@
 (def neighbor-table
   "Table of neighbors to each square."
   (for [square (range 0 100)]
-    (for [dir all-directionsr
+    (for [dir all-directions
           :let [neighbor (+ square dir)]
           :when (valid? square)
           :when (valid? neighbor)]
