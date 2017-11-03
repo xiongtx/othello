@@ -217,6 +217,59 @@
                                depth eval-fn)]
       (get-in result [:best-node :square]))))
 
+(defn put-first
+  "Move killer move to front of moves if it's one of the moves."
+  [killer moves]
+  (if (some #{killer} moves)
+    (cons killer (remove #{killer} moves))
+    moves))
+
+(defn alpha-beta-3
+  "α-β search, putting killer moves first."
+  [player board achievable cutoff ply eval-fn killer]
+  (if (zero? ply)
+    {:best-val (eval-fn player board)}
+    (let [opp (game/opponent player)
+          moves (put-first killer (game/legal-moves player board))]
+      (if (empty? moves)
+        (if (game/any-legal-move? opp board)
+          (-> (alpha-beta-3 opp board
+                            (- cutoff) (- achievable)
+                            (dec ply) eval-fn nil)
+              (update :best-val -))
+          {:best-val (final-value player board)})
+        (loop [achievable achievable
+               best-move (first moves)
+               killer2 nil
+               killer2-val winning-value
+               moves moves]
+          (if (or (empty? moves)
+                  (>= achievable cutoff))
+            {:best-val achievable
+             :best-move best-move}
+            (let [move (first moves)
+                  new-board (game/make-move move player board)
+                  {bval :best-val
+                   bmove :best-move} (alpha-beta-3 opp new-board
+                                                   (- cutoff) (- achievable)
+                                                   (dec ply) eval-fn killer2)
+                  val (- bval)]
+              (let [[achievable best-move] (if (> val achievable)
+                                             [val move]
+                                             [achievable best-move])
+                    [killer2 killer2-val] (if (and bmove (< val killer2-val))
+                                            [bmove val]
+                                            [killer2 killer2-val])]
+                (recur achievable best-move killer2 killer2-val (rest moves))))))))))
+
+(defn alpha-beta-searcher-3
+  "Return a strategy that does α-β search with killer moves."
+  [depth eval-fn]
+  (fn [player board]
+    (:best-move (alpha-beta-3 player board
+                              losing-value winning-value
+                              depth eval-fn nil))))
+
 (defn neighboring-opp?
   "Does square have an opponent's piece as a neighbor?"
   [player board square]
@@ -537,7 +590,7 @@
 
 (defn Iago
   [depth]
-  (alpha-beta-searcher-2 depth Iago-eval))
+  (alpha-beta-searcher-3 depth Iago-eval))
 
 (defn batch-test
   [b-strat w-strat]
