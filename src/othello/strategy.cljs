@@ -133,9 +133,10 @@
           moves (game/legal-moves player board)]
       (if (empty? moves)
         (if (game/any-legal-move? opp board)
-          {:best-val (- (:best-val (alpha-beta opp board
-                                               (- cutoff) (- achievable)
-                                               (dec ply) eval-fn)))}
+          (-> (alpha-beta opp board
+                          (- cutoff) (- achievable)
+                          (dec ply) eval-fn)
+              (update :best-val -))
           {:best-val (final-value player board)})
         (loop [achievable achievable
                best-move (first moves)
@@ -148,19 +149,19 @@
                   new-board (game/make-move move player board)
                   val (- (:best-val (alpha-beta opp new-board
                                                 (- cutoff) (- achievable)
-                                                (dec ply) eval-fn)))]
-              (recur (if (> val achievable) val achievable)
-                     (if (> val achievable) move best-move)
-                     (rest moves)))))))))
+                                                (dec ply) eval-fn)))
+                  [achievable best-move] (if (> val achievable)
+                                           [val move]
+                                           [achievable best-move])]
+              (recur achievable best-move (rest moves)))))))))
 
 (defn alpha-beta-searcher
   "Return strategy that searches to depth, then uses eval-fn."
   [depth eval-fn]
   (fn [player board]
-    (let [{:keys [best-move]} (alpha-beta player board
-                                          losing-value winning-value
-                                          depth eval-fn)]
-      best-move)))
+    (:best-move (alpha-beta player board
+                            losing-value winning-value
+                            depth eval-fn))))
 
 (defrecord Node [square board value])
 
