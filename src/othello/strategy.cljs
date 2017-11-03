@@ -186,9 +186,10 @@
           nodes (legal-nodes player board eval-fn)]
       (if (empty? nodes)
         (if (game/any-legal-move? opp board)
-          {:best-val (- (:best-val (alpha-beta-2 opp (update node :value -)
-                                                 (- cutoff) (- achievable)
-                                                 (dec ply) eval-fn)))}
+          (-> (alpha-beta-2 opp (update node :value -)
+                            (- cutoff) (- achievable)
+                            (dec ply) eval-fn)
+              (update :best-val -))
           {:best-val (final-value player board)})
         (loop [achievable achievable
                best-node (first nodes)
@@ -201,10 +202,11 @@
                   new-node (update node :value -)
                   val (- (:best-val (alpha-beta-2 opp new-node
                                                   (- cutoff) (- achievable)
-                                                  (dec ply) eval-fn)))]
-              (recur (if (> val achievable) val achievable)
-                     (if (> val achievable) node best-node)
-                     (rest nodes)))))))))
+                                                  (dec ply) eval-fn)))
+                  [achievable best-node] (if (> val achievable)
+                                           [val node]
+                                           [achievable best-node])]
+              (recur achievable best-node (rest nodes)))))))))
 
 (defn alpha-beta-searcher-2
   "Return a strategy that does α-β search with sorted moves."
