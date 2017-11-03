@@ -214,22 +214,25 @@
                                depth eval-fn)]
       (get-in result [:best-node :square]))))
 
+(defn neighboring-opp?
+  "Does square have an opponent's piece as a neighbor?"
+  [player board square]
+  (->> (game/neighbors square)
+       (map #(nth board %))
+       (some #(= (game/opponent player) %))
+       boolean))
+
 (defn mobility
   "Return [current potential] mobility for a player.
 
    Current mobility is number of legal moves.
 
-   Potential mobility is number of blank squares adjacent to an opponent that
-  are not legal moves."
+   Potential mobility is number of blank squares adjacent to opponent."
   [player board]
   (let [opp (game/opponent player)]
-    [(->> game/all-squares
-          (filter #(game/legal? % player board))
-          count)
-     (->> game/all-squares
-          (map game/neighbors)
-          (filter (fn [neighbors]
-                    (some #(= opp (nth board %)) neighbors)))
+    [(count (game/legal-moves player board))
+     (->> (game/blank-squares board)
+          (filter #(neighboring-opp? player board %))
           count)]))
 
 ;; Values to player-to-move for edge positions

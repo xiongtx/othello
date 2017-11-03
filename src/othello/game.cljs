@@ -42,6 +42,11 @@
           :when (valid? neighbor)]
       neighbor)))
 
+(defn blank-squares
+  "List of all blank squares on board."
+  [board]
+  (filter #(= blank (nth board %)) all-squares))
+
 (defn neighbors
   "Return list of squares adjacent to a square."
   [square]
