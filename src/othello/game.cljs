@@ -33,24 +33,10 @@
              54 black
              55 white))))
 
-(def neighbor-table
-  "Table of neighbors to each square."
-  (for [square (range 0 100)]
-    (for [dir all-directions
-          :let [neighbor (+ square dir)]
-          :when (valid? square)
-          :when (valid? neighbor)]
-      neighbor)))
-
 (defn blank-squares
   "List of all blank squares on board."
   [board]
   (filter #(= blank (nth board %)) all-squares))
-
-(defn neighbors
-  "Return list of squares adjacent to a square."
-  [square]
-  (nth neighbor-table square))
 
 (defn opponent
   [player]
@@ -64,6 +50,20 @@
   A valid move is not necessarily `legal?`."
   [move]
   (boolean (some #{move} all-squares)))
+
+(def neighbor-table
+  "Table of neighbors to each square."
+  (for [square (range 0 100)]
+    (for [dir all-directions
+          :let [neighbor (+ square dir)]
+          :when (valid? square)
+          :when (valid? neighbor)]
+      neighbor)))
+
+(defn neighbors
+  "Return list of squares adjacent to a square."
+  [square]
+  (nth neighbor-table square))
 
 (defn find-bracketing-piece
   "Return square number of the bracketing piece, or nil."
