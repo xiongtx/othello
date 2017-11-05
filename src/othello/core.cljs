@@ -128,7 +128,6 @@
 ;; Initialize app
 
 (defn mount-root []
-  #_(strategy/init-edge-table!)
   (r/render [home-page] (.getElementById js/document "app")))
 
 (defn init! []
