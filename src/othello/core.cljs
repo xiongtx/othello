@@ -63,14 +63,14 @@
     [:div
      (for [i (range 1 (inc 8))]
        ^{:key (str i)}
-       [:div
+       [:div.row.no-gutters
         (for [j (range 1 (inc 8))]
           (let [id (str i j)
                 pos (+ (* 10 i) j)]
             ^{:key id}
-            [:div {:class (str "square "
-                               (when (some #{pos} (game/legal-moves player board))
-                                 "legal"))}
+            [:div.col.square
+             {:class (when (some #{pos} (game/legal-moves player board))
+                       "legal")}
              [square (merge app-state
                             {:pos pos
                              :piece (nth board pos)})]]))])]))

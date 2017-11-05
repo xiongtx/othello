@@ -1,47 +1,38 @@
 body {
-    -webkit-font-smoothing: antialiased;
-    color: #333;
-    font-family: 'Helvetica Neue', Verdana, Helvetica, Arial, sans-serif;
-    font-size: 1.125em;
-    line-height: 1.5em;
     margin: 0 auto;
-    max-width: 700px;
+    max-width: 640px;
     padding-top: 72px;
 }
 
 .square {
-    align-content: center;
+    align-items: center;
     background-color: gray;
     border: 1px solid black;
-    display: table-cell;
-    font-size:50px;
+    display: flex;
     height: 80px;
-    text-align: center;
-    vertical-align:middle;
     width: 80px;
 }
 
 .blank {
+    height: 100%;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.black-piece{
+    background-color: black;
+    border-radius: 90%;
     height: 90%;
     margin: 0 auto;
     width: 90%;
 }
 
-.black-piece{
-    background-color:black;
-    border-radius:90%;
-    float: center;
-    height:90%;
-    margin: 0 auto;
-    width:90%;
-}
-
 .white-piece {
-    background-color:white;
-    border-radius:90%;
-    height:90%;
+    background-color: white;
+    border-radius: 90%;
+    height: 90%;
     margin: 0 auto;
-    width:90%;
+    width: 90%;
 }
 
 .legal {
